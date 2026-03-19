@@ -48,11 +48,11 @@ public class BuildHandler {
 		BlockCollection segments = backup.getPartBlockLocs(mazePart);
 		settings.computePaletteIfAbsent(mazePart);
 
-		new BlockPlacer(mazeMap.getWorld(), segments.listBlocks(), settings.getPalette(mazePart), ConfigSettings.BLOCKS_PLACED_PER_TICK, backupBlocks -> {
+		new BlockPlacer(plugin, mazeMap.getWorld(), segments.listBlocks(), settings.getPalette(mazePart), ConfigSettings.BLOCKS_PLACED_PER_TICK, backupBlocks -> {
 			backup.setBlocksIfAbsent(mazePart, backupBlocks);
 			Bukkit.getPluginManager().callEvent(new MazeBuildEvent(maze));
 			callback.run();
-		}).runTaskTimer(plugin, 0, 1);
+		}).start();
 	}
 	
 	/**
@@ -91,7 +91,7 @@ public class BuildHandler {
 				backup.getMaze().setEditable(true);
 				Bukkit.getPluginManager().callEvent(new MazeUnbuildEvent(maze, mazePart));
 				callback.run();
-			}).runTaskTimer(plugin, 0, 1);
+			}).start();
 			return;
 		}
 		if (!backup.getBuiltParts().contains(mazePart)) {
@@ -102,6 +102,6 @@ public class BuildHandler {
 			backup.removeMazePart(mazePart);
 			Bukkit.getPluginManager().callEvent(new MazeUnbuildEvent(maze, mazePart));
 			callback.run();
-		}).runTaskTimer(plugin, 0, 1);
+		}).start();
 	}
 }

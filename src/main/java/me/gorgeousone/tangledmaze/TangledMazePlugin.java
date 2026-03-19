@@ -1,6 +1,5 @@
 package me.gorgeousone.tangledmaze;
 
-import fr.black_eyes.lootchest.Main;
 import me.gorgeousone.tangledmaze.cmdframework.command.ParentCommand;
 import me.gorgeousone.tangledmaze.cmdframework.handler.CommandHandler;
 import me.gorgeousone.tangledmaze.command.AddClipCommand;
@@ -8,9 +7,6 @@ import me.gorgeousone.tangledmaze.command.BuildMazeCommand;
 import me.gorgeousone.tangledmaze.command.CutClipCommand;
 import me.gorgeousone.tangledmaze.command.GetWandCommand;
 import me.gorgeousone.tangledmaze.command.HelpCommand;
-import me.gorgeousone.tangledmaze.loot.LootRemoveCommand;
-import me.gorgeousone.tangledmaze.loot.LootRespawnCommand;
-import me.gorgeousone.tangledmaze.loot.LootSpawnCommand;
 import me.gorgeousone.tangledmaze.command.ReloadCommand;
 import me.gorgeousone.tangledmaze.command.SettingsCommand;
 import me.gorgeousone.tangledmaze.command.SolveMazeCommand;
@@ -28,8 +24,6 @@ import me.gorgeousone.tangledmaze.listener.ChangeWorldListener;
 import me.gorgeousone.tangledmaze.listener.ClickListener;
 import me.gorgeousone.tangledmaze.listener.PlayerQuitListener;
 import me.gorgeousone.tangledmaze.listener.UiListener;
-import me.gorgeousone.tangledmaze.loot.LootHandler;
-import me.gorgeousone.tangledmaze.loot.UnbuildListener;
 import me.gorgeousone.tangledmaze.ui.UiHandler;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
@@ -41,8 +35,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public final class TangledMazePlugin extends JavaPlugin {
 
@@ -56,7 +48,6 @@ public final class TangledMazePlugin extends JavaPlugin {
 	private RenderHandler renderHandler;
 	private BuildHandler buildHandler;
 	private UiHandler uiHandler;
-	private LootHandler lootHandler;
 	private ConfigSettings settings;
 	private ParentCommand mazeCmd;
 
@@ -71,7 +62,6 @@ public final class TangledMazePlugin extends JavaPlugin {
 		buildHandler = new BuildHandler(this, sessionHandler);
 		uiHandler = new UiHandler(toolHandler);
 
-		hookLootChestPlugin();
 		registerListeners();
 		registerCommands();
 
@@ -144,13 +134,6 @@ public final class TangledMazePlugin extends JavaPlugin {
 		mazeCmd.addChild(new TeleportCommand(sessionHandler, renderHandler));
 		mazeCmd.addChild(new SolveMazeCommand(sessionHandler, renderHandler));
 
-		boolean isLootAvailable = lootHandler != null;
-		ParentCommand lootCmd = new ParentCommand("loot");
-		lootCmd.addChild(new LootSpawnCommand(sessionHandler, lootHandler, isLootAvailable));
-		lootCmd.addChild(new LootRespawnCommand(sessionHandler, lootHandler, isLootAvailable));
-		lootCmd.addChild(new LootRemoveCommand(sessionHandler, lootHandler, isLootAvailable));
-		mazeCmd.addChild(lootCmd);
-
 		CommandHandler cmdHandler = new CommandHandler(this);
 		cmdHandler.registerCommand(mazeCmd);
 	}
@@ -176,22 +159,4 @@ public final class TangledMazePlugin extends JavaPlugin {
 		new UpdateCheck(this, resourceId, resourceName, updateInfoUrl).run();
 	}
 
-	private void hookLootChestPlugin() {
-		Logger logger = getLogger();
-		PluginManager manager = Bukkit.getPluginManager();
-
-		try {
-			Main lootChestPlugin = Main.getInstance();
-			lootHandler = new LootHandler(sessionHandler, lootChestPlugin, getLogger());
-			manager.registerEvents(new UnbuildListener(lootHandler), this);
-			logger.info("    Successfully detected LootChest plugin for spawning loot chests.");
-		} catch(NoClassDefFoundError e) {
-			logger.info("    LootChest plugin not detected. Loot chests can't be used.");
-			logger.info("    Download available at: https://www.spigotmc.org/resources/lootchest.61564/");
-		} catch (RuntimeException e) {
-			lootHandler = null;
-			logger.warning("    Compatibility issues with LootChest. Loot chests can't be used.");
-			logger.log(Level.SEVERE, e.toString(), e);
-		}
-	}
 }

@@ -1,8 +1,8 @@
 name: TangledMaze
 version: ${project.version}
 main: me.gorgeousone.tangledmaze.TangledMazePlugin
-api-version: 1.13
-softdepend: [LootChest]
+api-version: 1.20
+folia-supported: true
 
 commands:
     tangledmaze:

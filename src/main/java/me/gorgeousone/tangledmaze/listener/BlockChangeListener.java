@@ -20,7 +20,7 @@ import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.Location;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,17 +62,15 @@ public class BlockChangeListener implements Listener {
 				continue;
 			}
 			
-			new BukkitRunnable() {
-				@Override
-				public void run() {
-					Block updatedBlock = BlockUtil.getSurface(changedBlock);
-					Vec2 blockLoc = new Vec2(updatedBlock);
-					
-					for (Clip clip : clipsToUpdate) {
-						clip.updateLoc(blockLoc, updatedBlock.getY());
-					}
+			Location blockLocation = changedBlock.getLocation();
+			plugin.getServer().getRegionScheduler().runDelayed(plugin, blockLocation, t -> {
+				Block updatedBlock = BlockUtil.getSurface(changedBlock);
+				Vec2 blockLoc = new Vec2(updatedBlock);
+
+				for (Clip clip : clipsToUpdate) {
+					clip.updateLoc(blockLoc, updatedBlock.getY());
 				}
-			}.runTaskLater(plugin, 2);
+			}, 2);
 		}
 	}
 	

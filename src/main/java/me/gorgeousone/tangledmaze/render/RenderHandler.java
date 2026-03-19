@@ -22,7 +22,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -102,9 +102,9 @@ public class RenderHandler implements Listener {
 		createRenderIfAbsent(playerID);
 		RenderSession session = getPlayerRender(playerID);
 		
-		new BukkitRunnable() {
-			@Override
-			public void run() {
+		Player player = Bukkit.getPlayer(playerID);
+		if (player != null) {
+			player.getScheduler().runDelayed(plugin, t -> {
 				switch (cause) {
 					case RESIZE_START:
 						session.addLayer(CLIP_RESIZE_LAYER, tool.getVertices().subList(tool.getVertexToRelocate(), tool.getVertexToRelocate() + 1), CLIP_RESIZE_MAT);
@@ -127,8 +127,8 @@ public class RenderHandler implements Listener {
 						session.addLayer(CLIP_VERTEX_LAYER, tool.getVertices(), CLIP_VERTEX_MAT);
 						break;
 				}
-			}
-		}.runTaskLater(plugin, 2);
+			}, null, 2);
+		}
 	}
 	
 	/**

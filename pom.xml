@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>me.gorgeousone</groupId>
-	<artifactId>tangledmaze</artifactId>
+	<artifactId>TangledMaze-Folia</artifactId>
 	<version>3.1.0</version>
 	<packaging>jar</packaging>
 
@@ -54,8 +54,8 @@
 
 	<repositories>
 		<repository>
-			<id>spigotmc-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+			<id>papermc-repo</id>
+			<url>https://repo.papermc.io/repository/maven-public/</url>
 		</repository>
 		<repository>
 			<id>sonatype</id>
@@ -65,9 +65,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
-			<version>1.18-R0.1-SNAPSHOT</version>
+			<groupId>io.papermc.paper</groupId>
+			<artifactId>paper-api</artifactId>
+			<version>1.20.1-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -75,12 +75,6 @@
 			<artifactId>junit-jupiter</artifactId>
 			<version>5.8.2</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>fr.black_eyes.lootchest</groupId>
-			<artifactId>LootChest</artifactId>
-			<version>2.5.0</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

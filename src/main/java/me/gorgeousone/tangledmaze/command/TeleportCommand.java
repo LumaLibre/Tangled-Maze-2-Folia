@@ -50,7 +50,10 @@ public class TeleportCommand extends BaseCommand {
 				firstBorder.getZ() + 0.5);
 		tpLoc.setDirection(player.getLocation().getDirection());
 		
-		player.teleport(tpLoc);
-		renderHandler.getPlayerRender(playerId).show();
+		player.teleportAsync(tpLoc).thenRun(() -> {
+			if (renderHandler.getPlayerRender(playerId) != null) {
+				renderHandler.getPlayerRender(playerId).show();
+			}
+		});
 	}
 }

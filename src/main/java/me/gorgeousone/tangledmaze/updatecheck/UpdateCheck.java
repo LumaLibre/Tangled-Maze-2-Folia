@@ -12,47 +12,51 @@ import java.net.URL;
 import java.util.Scanner;
 
 public class UpdateCheck {
-	
+
 	private final JavaPlugin plugin;
 	private final int resourceId;
 	private final String resourceName;
 	private final String updateInfoPasteUrl;
-	
+
 	public UpdateCheck(JavaPlugin plugin, int resourceId, String resourceName, String updateInfoPasteUrl) {
 		this.plugin = plugin;
 		this.resourceId = resourceId;
 		this.resourceName = resourceName;
 		this.updateInfoPasteUrl = updateInfoPasteUrl;
 	}
-	
+
 	public void run() {
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		plugin.getServer().getAsyncScheduler().runNow(plugin, task -> {
 			try {
 				UpdateInfo latestUpdate = getLatestUpdateInfo();
-				
+
 				if (null == latestUpdate) {
 					plugin.getLogger().info("Plugin is up to date :)");
 					return;
 				}
-				sendStaffInfo("A new version of TangledMaze is available!");
-				sendStaffInfo(latestUpdate.getChatMessage());
+				String msg = "A new version of TangledMaze is available!";
+				BaseComponent[] chatMessage = latestUpdate.getChatMessage();
+				plugin.getServer().getGlobalRegionScheduler().run(plugin, t -> {
+					sendStaffInfo(msg);
+					sendStaffInfo(chatMessage);
+				});
 			} catch (IOException exception) {
 				plugin.getLogger().info("Unable to check for updates...");
 			}
 		});
 	}
-	
+
 	private UpdateInfo getLatestUpdateInfo() throws IOException {
 		InputStream inputStream = new URL(updateInfoPasteUrl).openStream();
 		Scanner scanner = new Scanner(inputStream);
 		UpdateInfo latestUpdate = new UpdateInfo(scanner.nextLine(), resourceName, resourceId);
-		
+
 		if (VersionUtil.PLUGIN_VERSION.isBelow(latestUpdate.getVersion())) {
 			return latestUpdate;
 		}
 		return null;
 	}
-	
+
 	private void sendStaffInfo(String message) {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			if (player.isOp()) {
@@ -61,7 +65,7 @@ public class UpdateCheck {
 		}
 		Bukkit.getConsoleSender().sendMessage(message);
 	}
-	
+
 	private void sendStaffInfo(BaseComponent[] message) {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			if (player.isOp()) {

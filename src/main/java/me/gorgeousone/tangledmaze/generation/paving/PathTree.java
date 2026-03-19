@@ -110,9 +110,12 @@ public class PathTree {
 		GridCell closerSeg = exitDist1 <= exitDist2 ? seg1 : seg2;
 		
 		for (int i = 0; i < distDiff / 2; i++) {
+			if (furtherSeg == null) {
+				break;
+			}
 			GridCell oldParent = furtherSeg.getParent();
 			furtherSeg.setParent(closerSeg);
-			
+
 			closerSeg = furtherSeg;
 			furtherSeg = oldParent;
 		}

@@ -26,7 +26,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.Location;
 import org.bukkit.util.BlockIterator;
 
 import java.util.HashSet;
@@ -210,12 +210,10 @@ public class ClickListener implements Listener {
 		for (Direction dir : Direction.CARDINALS) {
 			updatedBlocks.add(new Vec2(clickedBlock.getRelative(dir.getX(), 0, dir.getZ())));
 		}
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				render.redisplayBlocks(updatedBlocks);
-			}
-		}.runTaskLater(plugin, 2);
+		Location blockLocation = clickedBlock.getLocation();
+		plugin.getServer().getRegionScheduler().runDelayed(plugin, blockLocation, t -> {
+			render.redisplayBlocks(updatedBlocks);
+		}, 2);
 	}
 
 	/**
